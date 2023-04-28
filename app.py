@@ -7,7 +7,7 @@ import pandas as pd
 
 st.set_page_config(page_title= 'Premium Calculator',layout='wide', initial_sidebar_state='expanded')
 
-image = Image.open('avon.jfif')
+image = Image.open('avonwhite.png')
 st.image(image, use_column_width=False)
 
 query = 'SELECT  DISTINCT Name\
