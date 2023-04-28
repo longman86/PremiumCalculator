@@ -7,7 +7,7 @@ import pandas as pd
 
 st.set_page_config(page_title= 'Premium Calculator',layout='wide', initial_sidebar_state='expanded')
 
-image = Image.open('avonwhite.png')
+image = Image.open('utilization_image.png')
 st.image(image, use_column_width=False)
 
 query = 'SELECT  DISTINCT Name\
@@ -31,7 +31,6 @@ def get_data_from_sql():
 
 active_clients = get_data_from_sql()
 
-'st.session_state object:', st.session_state
 
 def score_calculator(options, mlr, portfolio, pop, last_repriced, tenure, discount, female_pop, male_pop, rate, industry):
     mlr_score = 0
