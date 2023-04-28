@@ -7,7 +7,7 @@ import pandas as pd
 
 st.set_page_config(page_title= 'Premium Calculator',layout='wide', initial_sidebar_state='expanded')
 
-image = Image.open('utilization_image.png')
+image = Image.open('Avon.png')
 st.image(image, use_column_width=False)
 
 query = 'SELECT  DISTINCT Name\
@@ -382,6 +382,7 @@ if options == 'Multiple Product':
 
 
 final_score, result = score_calculator(options,mlr, portfolio, pop, last_repriced, tenure, discount, female_pop, male_pop, rate, industry)
+final_score = round(final_score,2)
 st.header('RECOMMENDATION')
 st.subheader(client + ' has a total score of ' + str(final_score) + '. It is therefore recommended that their premium should be repriced at ' + result)
 
