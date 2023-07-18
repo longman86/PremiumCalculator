@@ -25,8 +25,7 @@ def get_data_from_sql():
         +st.secrets['username']
         +';PWD='
         +st.secrets['password']
-        )
-    
+        )   
     active_clients = pd.read_sql(query, conn)
     conn.close()
     return active_clients
