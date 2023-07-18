@@ -28,6 +28,7 @@ def get_data_from_sql():
         )
     
     active_clients = pd.read_sql(query, conn)
+    conn.close()
     return active_clients
 
 active_clients = get_data_from_sql()
