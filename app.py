@@ -10,8 +10,9 @@ st.set_page_config(page_title= 'Premium Calculator',layout='wide', initial_sideb
 image = Image.open('Avon.png')
 st.image(image, use_column_width=False)
 
-query = 'SELECT  DISTINCT Name\
-        FROM dimClient'
+query = 'select distinct upper(ClientName)\
+        from [dbo].[vw_PolicyInformation]\
+        where [Policy ExpiryDate] > getdate()'
 
 @st.cache_data(ttl = dt.timedelta(hours=24))
 def get_data_from_sql():
@@ -33,6 +34,7 @@ active_clients = get_data_from_sql()
 
 
 def score_calculator(options, mlr, portfolio, pop, last_repriced, tenure, discount, female_pop, male_pop, rate, industry):
+    #Assign score based on the selected MLR of the client
     mlr_score = 0
     if mlr == '1 - 39':
         mlr_score = 0
@@ -41,6 +43,7 @@ def score_calculator(options, mlr, portfolio, pop, last_repriced, tenure, discou
     elif mlr == 'Above 70':
         mlr_score = 7
 
+    #Assign score based on the selected portfolio size of the client
     portfolio_score = 0
     if portfolio == '25,000 - 100,000':
         portfolio_score = 4
@@ -53,42 +56,56 @@ def score_calculator(options, mlr, portfolio, pop, last_repriced, tenure, discou
     elif portfolio == '50M and Above':
         portfolio_score = 0
 
+    #Assign score based on the selected range of the client's active lives
     pop_score = 0
-    if pop == '1 - 1000':
-        pop_score = 5
-    elif pop == '1001 - 5000':
-        pop_score = 3
+    if pop == '1 - 5000':
+        pop_score = 4
     elif pop == '5001 - 10000':
+        pop_score = 3
+    elif pop == '10001 - 15000':
         pop_score = 2
-    elif pop == 'Above 10k Lives':
+    elif pop == '15001 - 20000':
+        pop = 1
+    elif pop == 'Above 20k Lives':
         pop_score = 0
     
+    #Assign score based on the selected reprice category of the client
     reprice_score = 0
-    if last_repriced == 'Last Year':
-        reprice_score = 0
-    elif last_repriced == '2 Years ago':
+    if last_repriced == 'Never been Repriced':
+        reprice_score = 4
+    elif last_repriced == 'Above 3 years':
         reprice_score = 3
-    elif last_repriced == '3 years and Above':
-        reprice_score = 7
+    elif last_repriced == '2 years':
+        reprice_score = 2
+    elif last_repriced == 'Last year':
+        reprice_score = 1
+    elif last_repriced == 'Long-standing(Never been repriced based on relationship and good MLR)':
+        reprice_score = 0
 
+    #Assign score based on the tenure of the client
     tenure_score = 0
-    if tenure == '1 - 3 years':
-        tenure_score = 5
-    elif tenure == '4 - 5 years':
-        tenure_score = 3
-    elif tenure == '6 - 10 years':
+    if tenure == 'Above 10 years':
+        tenure_score = 1
+    elif tenure == '8 - 10 years':
         tenure_score = 2
-
+    elif tenure == '6 - 8 years':
+        tenure_score = 3
+    elif tenure == '3 - 5 years':
+        tenure_score = 4
+    elif tenure == '1 - 2 years':
+        tenure_score = 0
+    
+    #Assign score based on whether the client is subscribed to a single plan and the discount history applied to the plan(s)
     discount_score = 0
-    if options == 'Single Product' and discount == '1 - 10':
+    if options == 'Single Product' and discount == '2.5 - 5':
         discount_score = 0
-    elif options == 'Single Product' and discount == '11 - 20':
+    elif options == 'Single Product' and discount == '5.1 - 15.5':
         discount_score = 1
-    elif options == 'Single Product' and discount == '21 - 30':
+    elif options == 'Single Product' and discount == '15.6 - 30.5':
         discount_score = 2
-    elif options == 'Single Product' and discount == '31 - 40':
+    elif options == 'Single Product' and discount == '30.6 - 40.5':
         discount_score = 3
-    elif options == 'Single Product' and discount == '41 - 50':
+    elif options == 'Single Product' and discount == '40.6 - 50':
         discount_score = 4
     elif options == 'Multiple Product' and discount > 0 and discount < 11:
         discount_score = 0
@@ -101,6 +118,7 @@ def score_calculator(options, mlr, portfolio, pop, last_repriced, tenure, discou
     elif options == 'Multiple Product' and discount > 40 and discount < 51:
         discount_score = 4
 
+    #Assign score based on the population of female lives the client has
     female_pop_score = 0
     if female_pop == '20 - 30':
         female_pop_score = 2
@@ -109,6 +127,7 @@ def score_calculator(options, mlr, portfolio, pop, last_repriced, tenure, discou
     elif female_pop == '40 and Above':
         female_pop_score = 5
 
+    #Assign score based on the populagtion of male lives the client has
     male_pop_score = 0
     if male_pop == '20 - 30':
         male_pop_score = 2
@@ -117,6 +136,7 @@ def score_calculator(options, mlr, portfolio, pop, last_repriced, tenure, discou
     elif male_pop == '40 and Above':
         male_pop_score = 5
     
+    #Assign score based on the number of plans the client is subscribed to and the rate type applied to the plan(s)
     rate_score = 0
     if options == 'Single Product' and rate == 'Base Rate':
         rate_score = 3
@@ -125,6 +145,7 @@ def score_calculator(options, mlr, portfolio, pop, last_repriced, tenure, discou
     elif options == 'Multiple Product':
         rate_score = rate
 
+    #Assign score based on the Industry category the client is in.
     industry_score = 0
     if industry == 'Financial Services':
         industry_score = 0.5
@@ -148,7 +169,7 @@ def score_calculator(options, mlr, portfolio, pop, last_repriced, tenure, discou
         industry_score = 1.5
 
 
-
+    #Calculate the final score and assign the corresponding reccommendation
     final_score = mlr_score + portfolio_score + pop_score + reprice_score + tenure_score + discount_score + female_pop_score + male_pop_score + rate_score + industry_score
     if final_score > 0 and final_score < 11:
         result = 'No Premium Increment'
@@ -163,23 +184,27 @@ def score_calculator(options, mlr, portfolio, pop, last_repriced, tenure, discou
 
     return final_score, result
 
+#Create a title on the sidebar
 st.sidebar.title('Premium Calculator')
+#Create a radio button that enables the user to select the client category
 options = st.sidebar.radio('Is the Client Single or Multi Product', options=['Single Product', 'Multiple Product'])
 
 if options == 'Single Product':
 
+    #Create a sidebar that enables the user to select the different metrics category of the client to be repriced.
     client = st.sidebar.selectbox(label='Select Client', options=active_clients)
     mlr = st.sidebar.selectbox(label='Client MLR Range', options=('1 - 39', '40 - 70', 'Above 70'))
     portfolio = st.sidebar.selectbox(label='Portfolio Size', options=('25,000 - 100,000', '100,001 - 1,000,000', '1M - 5M', '5M - 50M', '50M and Above'))
-    pop = st.sidebar.selectbox(label='Lives Population', options=('1 - 1000', '1001 - 5000', '5001 - 10000', 'Above 10K Lives'))
-    last_repriced = st.sidebar.selectbox(label='Client Last Reprice Period', options =('Last Year', '2 Years ago', '3 years and Above'))
-    tenure = st.sidebar.selectbox(label='Client Tenure', options=('1 - 3 years', '4 - 5 years', '6 - 10years'))
-    discount = st.sidebar.selectbox(label='Previous Discount', options=('1 - 10', '11 - 20', '21 - 30', '31 - 40', '41 - 50'))
+    pop = st.sidebar.selectbox(label='Lives Population', options=('1 - 5000', '5001 - 10000', '10001 - 15000', '15001 - 20000', 'Above 20K Lives'))
+    last_repriced = st.sidebar.selectbox(label='Client Last Reprice Period', options =('Never been Repriced', 'Above 3 years', '2 years', 'Last year', 'Long-standing(Never been repriced based on relationship and good MLR)'))
+    tenure = st.sidebar.selectbox(label='Client Tenure', options=('1 - 2 years', '3 - 5 years', '6 - 8 years', '8 - 10 years', 'Above 10 years'))
+    discount = st.sidebar.selectbox(label='Previous Discount', options=('2.5 - 5', '5.1 - 15.5', '15.6 - 30.5', '30.6 - 40.5', '40.6 - 50'))
     female_pop = st.sidebar.selectbox(label='Female Population', options=('20 - 30', '30 - 40', '40 and Above'))
     male_pop = st.sidebar.selectbox(label='Male Population', options=('20 - 30', '30 - 40', '40 and Above'))
     rate = st.sidebar.selectbox(label='Applied Rate', options=('Base Rate', 'Circulation Rate'))
     industry = st.sidebar.selectbox(label='Industry', options=('Financial Services', 'Education', 'Manufacturing and FMCG', 'Real Estate', 'Hospitality', 'Healthcare and Pharmaceuticals', 'Oil and Gas', 'Agriculture', 'Power and Utlilities', 'Tech, Media and Telcos'))
 
+#create a sidebar slider that enables user to select the number of plans the client is subscribed to and select the discount and base rate for each of these products
 if options == 'Multiple Product':
     num_of_products = st.sidebar.slider(label='Total Number of Products', min_value=2, max_value=7)
     if num_of_products == 2:
