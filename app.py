@@ -10,9 +10,8 @@ st.set_page_config(page_title= 'Premium Calculator',layout='wide', initial_sideb
 image = Image.open('Avon.png')
 st.image(image, use_column_width=False)
 
-query = 'select distinct upper(ClientName)\
-        from [dbo].[vw_PolicyInformation]\
-        where [Policy ExpiryDate] > getdate()'
+query = 'select distinct ClientName from tblClientMaster\
+        where PolicyExpiryDate >= getdate()'
 
 @st.cache_data(ttl = dt.timedelta(hours=24))
 def get_data_from_sql():
@@ -173,13 +172,13 @@ def score_calculator(options, mlr, portfolio, pop, last_repriced, tenure, discou
     final_score = mlr_score + portfolio_score + pop_score + reprice_score + tenure_score + discount_score + female_pop_score + male_pop_score + rate_score + industry_score
     if final_score > 0 and final_score < 11:
         result = 'No Premium Increment'
-    elif final_score > 10 and final_score < 31:
+    elif final_score > 10 and final_score < 21:
         result = '5% Premium Increment'
-    elif final_score > 30 and final_score < 51:
+    elif final_score > 20 and final_score < 31:
         result = '10% Premium Increment'
-    elif final_score > 50 and final_score < 71:
+    elif final_score > 30 and final_score < 41:
         result = '20% Premium Increment'
-    elif final_score > 70:
+    elif final_score > 40:
         result = '30% Premium Increment'
 
     return final_score, result
