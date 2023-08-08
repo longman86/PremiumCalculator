@@ -32,7 +32,7 @@ def get_data_from_sql():
 active_clients = get_data_from_sql()
 
 
-def score_calculator(options, mlr, portfolio, pop, last_repriced, tenure, discount, female_pop, male_pop, rate, industry):
+def score_calculator(options, mlr, portfolio, pop, last_repriced, tenure, discount, female_pop, rate, industry):
     #Assign score based on the selected MLR of the client
     mlr_score = 0
     if mlr == '1 - 39':
@@ -174,7 +174,7 @@ def score_calculator(options, mlr, portfolio, pop, last_repriced, tenure, discou
 
 
     #Calculate the final score and assign the corresponding reccommendation
-    final_score = mlr_score + portfolio_score + pop_score + reprice_score + tenure_score + discount_score + female_pop_score + male_pop_score + rate_score + industry_score
+    final_score = mlr_score + portfolio_score + pop_score + reprice_score + tenure_score + discount_score + female_pop_score  + rate_score + industry_score
     if final_score > 0 and final_score < 11:
         result = 'No Premium Increment'
     elif final_score > 10 and final_score < 21:
