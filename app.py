@@ -119,21 +119,26 @@ def score_calculator(options, mlr, portfolio, pop, last_repriced, tenure, discou
 
     #Assign score based on the population of female lives the client has
     female_pop_score = 0
-    if female_pop == '20 - 30':
+    if female_pop == '0 - 10%':
+        female_pop_score = 0
+    elif female_pop == '11 - 20%':
+        female_pop_score = 1
+    elif female_pop == '21 - 30%':
         female_pop_score = 2
-    elif female_pop == '30 - 40':
+    elif female_pop == '31 - 40%':
         female_pop_score = 3
-    elif female_pop == '40 and Above':
+    elif female_pop == '41 - 50%':
+        female_pop_score = 4
+    elif female_pop == 'Above 50%':
         female_pop_score = 5
-
-    #Assign score based on the populagtion of male lives the client has
-    male_pop_score = 0
-    if male_pop == '20 - 30':
-        male_pop_score = 2
-    elif male_pop == '30 - 40':
-        male_pop_score = 3
-    elif male_pop == '40 and Above':
-        male_pop_score = 5
+    #Assign score based on the population of male lives the client has
+    # male_pop_score = 0
+    # if male_pop == '20 - 30':
+    #     male_pop_score = 2
+    # elif male_pop == '30 - 40':
+    #     male_pop_score = 3
+    # elif male_pop == '40 and Above':
+    #     male_pop_score = 5
     
     #Assign score based on the number of plans the client is subscribed to and the rate type applied to the plan(s)
     rate_score = 0
@@ -198,8 +203,8 @@ if options == 'Single Product':
     last_repriced = st.sidebar.selectbox(label='Client Last Reprice Period', options =('Never been Repriced', 'Above 3 years', '2 years', 'Last year', 'Long-standing(Never been repriced based on relationship and good MLR)'))
     tenure = st.sidebar.selectbox(label='Client Tenure', options=('1 - 2 years', '3 - 5 years', '6 - 8 years', '8 - 10 years', 'Above 10 years'))
     discount = st.sidebar.selectbox(label='Previous Discount', options=('2.5 - 5', '5.1 - 15.5', '15.6 - 30.5', '30.6 - 40.5', '40.6 - 50'))
-    female_pop = st.sidebar.selectbox(label='Female Population', options=('20 - 30', '30 - 40', '40 and Above'))
-    male_pop = st.sidebar.selectbox(label='Male Population', options=('20 - 30', '30 - 40', '40 and Above'))
+    female_pop = st.sidebar.selectbox(label='Female Population', options=('0 - 10%', '11 - 20%', '21 - 30%', '31 - 40%', '41 - 50%', 'Above 50%'))
+    # male_pop = st.sidebar.selectbox(label='Male Population', options=('20 - 30', '30 - 40', '40 and Above'))
     rate = st.sidebar.selectbox(label='Applied Rate', options=('Base Rate', 'Circulation Rate'))
     industry = st.sidebar.selectbox(label='Industry', options=('Financial Services', 'Education', 'Manufacturing and FMCG', 'Real Estate', 'Hospitality', 'Healthcare and Pharmaceuticals', 'Oil and Gas', 'Agriculture', 'Power and Utlilities', 'Tech, Media and Telcos'))
 
@@ -392,20 +397,26 @@ if options == 'Multiple Product':
         discount = (product1 + product2 + product3 + product4 + product5 + product6 + product7) /7
         rate = (rate_score1 + rate_score2 + rate_score3 +rate_score4 + rate_score5 + rate_score6 + rate_score7)/7
        
-
     client = st.sidebar.selectbox(label='Select Client', options=active_clients)
     mlr = st.sidebar.selectbox(label='Client MLR Range', options=('1 - 39', '40 - 70', 'Above 70'))
     portfolio = st.sidebar.selectbox(label='Portfolio Size', options=('25,000 - 100,000', '100,001 - 1,000,000', '1M - 5M', '5M - 50M', '50M and Above'))
-    pop = st.sidebar.selectbox(label='Lives Population', options=('1 - 1000', '1001 - 5000', '5001 - 10000', 'Above 10K Lives'))
-    last_repriced = st.sidebar.selectbox(label='Client Last Reprice Period', options =('Last Year', '2 Years ago', '3 years and Above'))
-    tenure = st.sidebar.selectbox(label='Client Tenure', options=('1 - 3 years', '4 - 5 years', '6 - 10years'))
-    female_pop = st.sidebar.selectbox(label='Female Population', options=('20 - 30', '30 - 40', '40 and Above'))
-    male_pop = st.sidebar.selectbox(label='Male Population', options=('20 - 30', '30 - 40', '40 and Above'))
+    pop = st.sidebar.selectbox(label='Lives Population', options=('1 - 5000', '5001 - 10000', '10001 - 15000', '15001 - 20000', 'Above 20K Lives'))
+    last_repriced = st.sidebar.selectbox(label='Client Last Reprice Period', options =('Never been Repriced', 'Above 3 years', '2 years', 'Last year', 'Long-standing(Never been repriced based on relationship and good MLR)'))
+    tenure = st.sidebar.selectbox(label='Client Tenure', options=('1 - 2 years', '3 - 5 years', '6 - 8 years', '8 - 10 years', 'Above 10 years'))
+    female_pop = st.sidebar.selectbox(label='Female Population', options=('0 - 10%', '11 - 20%', '21 - 30%', '31 - 40%', '41 - 50%', 'Above 50%'))
+    # client = st.sidebar.selectbox(label='Select Client', options=active_clients)
+    # mlr = st.sidebar.selectbox(label='Client MLR Range', options=('1 - 39', '40 - 70', 'Above 70'))
+    # portfolio = st.sidebar.selectbox(label='Portfolio Size', options=('25,000 - 100,000', '100,001 - 1,000,000', '1M - 5M', '5M - 50M', '50M and Above'))
+    # pop = st.sidebar.selectbox(label='Lives Population', options=('1 - 1000', '1001 - 5000', '5001 - 10000', 'Above 10K Lives'))
+    # last_repriced = st.sidebar.selectbox(label='Client Last Reprice Period', options =('Last Year', '2 Years ago', '3 years and Above'))
+    # tenure = st.sidebar.selectbox(label='Client Tenure', options=('1 - 3 years', '4 - 5 years', '6 - 10years'))
+    # female_pop = st.sidebar.selectbox(label='Female Population', options=('20 - 30', '30 - 40', '40 and Above'))
+    # male_pop = st.sidebar.selectbox(label='Male Population', options=('20 - 30', '30 - 40', '40 and Above'))
     industry = st.sidebar.selectbox(label='Industry', options=('Financial Services', 'Education', 'Manufacturing and FMCG', 'Real Estate', 'Hospitality', 'Healthcare and Pharmaceuticals', 'Oil and Gas', 'Agriculture', 'Power and Utlilities', 'Tech, Media and Telcos'))
 
+    
 
-
-final_score, result = score_calculator(options,mlr, portfolio, pop, last_repriced, tenure, discount, female_pop, male_pop, rate, industry)
+final_score, result = score_calculator(options,mlr, portfolio, pop, last_repriced, tenure, discount, female_pop, rate, industry)
 final_score = round(final_score,2)
 st.header('RECOMMENDATION')
 st.subheader(client + ' has a total score of ' + str(final_score) + '. It is therefore recommended that their premium should be repriced at ' + result)
