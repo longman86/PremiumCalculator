@@ -209,7 +209,7 @@ if options == 'Single Product':
     industry = st.sidebar.selectbox(label='Industry', options=('Financial Services', 'Education', 'Manufacturing and FMCG', 'Real Estate', 'Hospitality', 'Healthcare and Pharmaceuticals', 'Oil and Gas', 'Agriculture', 'Power and Utlilities', 'Tech, Media and Telcos'))
 
 #create a sidebar slider that enables user to select the number of plans the client is subscribed to and select the discount and base rate for each of these products
-if options == 'Multiple Product':
+elif options == 'Multiple Product':
     num_of_products = st.sidebar.slider(label='Total Number of Products', min_value=2, max_value=7)
     if num_of_products == 2:
         product1 = st.sidebar.slider(label='Product 1 Discount', min_value=0,max_value=50)
@@ -394,8 +394,8 @@ if options == 'Multiple Product':
             rate_score7 = 3
         elif rate7 == 'Circulation Rate':
             rate_score7 = 2
-        discount = (product1 + product2 + product3 + product4 + product5 + product6 + product7) /7
-        rate = (rate_score1 + rate_score2 + rate_score3 +rate_score4 + rate_score5 + rate_score6 + rate_score7)/7
+    discount = (product1 + product2 + product3 + product4 + product5 + product6 + product7) /7
+    rate = (rate_score1 + rate_score2 + rate_score3 +rate_score4 + rate_score5 + rate_score6 + rate_score7)/7
        
     client = st.sidebar.selectbox(label='Select Client', options=active_clients)
     mlr = st.sidebar.selectbox(label='Client MLR Range', options=('1 - 39', '40 - 70', 'Above 70'))
